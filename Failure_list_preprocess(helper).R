@@ -12,10 +12,10 @@ source('head.R')
 load(file.path(dir_data,'helper[09-13].Rda'))
 
 # 1. extract some columns and filter replica list
-col_need <- c('´´½¨Ê±¼ä','¹ÊÕÏÔ­Òò','µ±Ç°×´Ì¬','¹ÊÕÏ·¢Éú²¿ÃÅ','²¿ÃÅ','·þÎñ»Ö¸´Ê±¼ä','½áµ¥Ê±¼ä',
-              '½â¾ö·½·¨','¹Ì×Ê±àºÅ','¹ÊÕÏ»ú¹Ì×ÊºÅ','Ö÷»úIP','¸æ¾¯¼¶±ð','Éè±¸ÐÍºÅ','Éè±¸ÀàÐÍ',
-              'SN','ÉÏ¼ÜÊ±¼ä','·þÎñ»Ö¸´ºÄÊ±.Ð¡Ê±.','ÊÂ¼þÀàÐÍ','Ó²ÅÌ¹ÊÕÏÀàÐÍ','Ó²ÅÌ¹ÊÕÏÊýÁ¿',
-              'Ó²ÅÌÈÝÁ¿','Ó²ÅÌÉú²ú³§ÉÌ','Ó²ÅÌÆ·ÅÆ³§ÉÌ','±¸»ú¹Ì×ÊºÅ')
+col_need <- c('åˆ›å»ºæ—¶é—´','æ•…éšœåŽŸå› ','å½“å‰çŠ¶æ€','æ•…éšœå‘ç”Ÿéƒ¨é—¨','éƒ¨é—¨','æœåŠ¡æ¢å¤æ—¶é—´','ç»“å•æ—¶é—´',
+              'è§£å†³æ–¹æ³•','å›ºèµ„ç¼–å·','æ•…éšœæœºå›ºèµ„å·','ä¸»æœºIP','å‘Šè­¦çº§åˆ«','è®¾å¤‡åž‹å·','è®¾å¤‡ç±»åž‹',
+              'SN','ä¸Šæž¶æ—¶é—´','æœåŠ¡æ¢å¤è€—æ—¶.å°æ—¶.','äº‹ä»¶ç±»åž‹','ç¡¬ç›˜æ•…éšœç±»åž‹','ç¡¬ç›˜æ•…éšœæ•°é‡',
+              'ç¡¬ç›˜å®¹é‡','ç¡¬ç›˜ç”Ÿäº§åŽ‚å•†','ç¡¬ç›˜å“ç‰ŒåŽ‚å•†','å¤‡æœºå›ºèµ„å·')
 data <- data[,col_need]
 names(data) <- c('f_time','reason','state','fail_dept','dept','recover_time','close_time',
                  'solution','svr_id','svr_id_failure','ip','level','model_name','dev_class_id',
@@ -26,7 +26,7 @@ data <- subset(data,as.numeric(state) != 1 & as.numeric(state) != 4)
 # 2.filter IP
 data.filter <- data[with(data,order(ip,f_time)),]
 # 2.1 replace wrong string
-data.filter$ip <- gsub("ÎÞ", "", data.filter$ip)
+data.filter$ip <- gsub("æ— ", "", data.filter$ip)
 data.filter$ip <- gsub("\n", "", data.filter$ip)
 # 2.2 delete item without ip
 data.filter <- data.filter[data.filter$ip!='',] 
@@ -39,16 +39,16 @@ idx.ip_reg <- grepl(regexp.ip,data.filter$ip)
 data.filter <- data.filter[idx.ip_reg,]
 data.filter <- factorX(data.filter)
 
-# 3. ¹ýÂËf_time,use_time,close_time
-data.filter$use_time <- gsub("ÎÞ", "", data.filter$use_time)
+# 3. è¿‡æ»¤f_time,use_time,close_time
+data.filter$use_time <- gsub("æ— ", "", data.filter$use_time)
 data.filter$use_time <- gsub("\n", "", data.filter$use_time)
 data.filter$use_time <- as.POSIXct(data.filter$use_time,tz = 'UTC')
 data.filter$f_time <- as.POSIXct(data.filter$f_time,tz = 'UTC')
 
 # 4.add class (-1 for non disk failure;13 for single disk failure and 14 for multiple disk failure)
 data.filter$class <- -1
-data.filter$class[as.character(data.filter$disk_failure_type) == 'µ¥Ó²ÅÌ¹ÊÕÏ'] <- 13
-data.filter$class[as.character(data.filter$disk_failure_type) == '¶àÓ²ÅÌ¹ÊÕÏ'] <- 14
+data.filter$class[as.character(data.filter$disk_failure_type) == 'å•ç¡¬ç›˜æ•…éšœ'] <- 13
+data.filter$class[as.character(data.filter$disk_failure_type) == 'å¤šç¡¬ç›˜æ•…éšœ'] <- 14
 
 # 5.save
 data.flist <- data.filter
