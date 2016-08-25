@@ -1,9 +1,11 @@
 故障单生成路径：
 1.Failure_list_preprocess(helper).R + Failure_list_preprocess(uwork).R
 分别读取两个故障单
-2.Failure_list_preprocess(ALL).R
+2A.Failure_list_preprocess(ALL).R
 合并两个故障单
+2B.diskInfoLoad.R
+从两个文件读取磁盘信息，并生成机器磁盘信息和磁盘信息汇总
 3.Disk_number_label.R
-读取cmdb，取故障单共同存储
+读取cmdb，与磁盘信息和故障单共同存储
 4.attr_load.R
 生成最终结果

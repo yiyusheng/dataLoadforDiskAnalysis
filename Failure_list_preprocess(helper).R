@@ -2,6 +2,7 @@
 rm(list = ls())
 source('head.R')
 
+####################################
 # read data and save
 # data <- rbind(read.csv(file.path(dir_data,'2009.csv')),
 #               read.csv(file.path(dir_data,'2010.csv')),
@@ -19,7 +20,7 @@ col_need <- c('创建时间','故障原因','当前状态','故障发生部门',
 data <- data[,col_need]
 names(data) <- c('f_time','reason','state','fail_dept','dept','recover_time','close_time',
                  'solution','svr_id','svr_id_failure','ip','level','model_name','dev_class_id',
-                 'SN','use_time','recover_interval','type','disk_failure_type','disk_failure_count',
+                 'SN','use_time','recover_interval','ftype','disk_failure_type','disk_failure_count',
                  'disk_capacity','disk_vendor','disk_band_vendor','svr_id_backup')
 data <- subset(data,as.numeric(state) != 1 & as.numeric(state) != 4)
 
@@ -52,5 +53,6 @@ data.filter$class[as.character(data.filter$disk_failure_type) == '多硬盘故�
 
 # 5.save
 data.flist <- data.filter
+data.flist$group <- 'helper'
 data.bad <- subset(data.flist,class!=-1)
 save(data.flist,data.bad,file = file.path(dir_data,'flist(helper[2008-2013]).Rda'))

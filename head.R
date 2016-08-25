@@ -19,11 +19,15 @@ dirName <- 'dataLoadforDiskAnalysis'
 if (osFlag){
   dir_code <- paste('D:/Git/',dirName,sep='')
   dir_data <- paste('D:/Data/',dirName,sep='')
+  setwd(dir_code)
+  source(file.path(dir_code,'loadFunc.R'))
   source('D:/Git/R_Function/Rfun.R')
 }else{
   dir_code <- paste('/home/yiyusheng/Code/R/',dirName,sep='')
+  setwd(dir_code)
   dir_data <- paste('/home/yiyusheng/Data/',dirName,sep='')
-  source('/home/yiyusheng/Code/R/Rfun.R')
+  source('/home/yiyusheng/Code/R/R_Function/Rfun.R')
+  source(file.path(dir_code,'loadFunc.R'))
   # options('width' = 150)
 }
 
