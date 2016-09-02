@@ -15,10 +15,11 @@ dedupTime <- function(data.flist,dayDup){
     curSvrid <- data.flist$svr_id[i]
     curFtime <- data.flist$f_time[i]
     if (curSvrid == pSvrid & 
-        difftime(curFtime,pFtime,tz = 'UTC',units = 'days') > dayDup){
+        as.numeric(difftime(curFtime,pFtime,tz = 'UTC',units = 'days')) > dayDup){
       pFtime <- curFtime
       next
-    } else if(curSvrid == pSvrid & (curFtime - pFtime) <= dayDup){
+    } else if(curSvrid == pSvrid & 
+              as.numeric(difftime(curFtime,pFtime,tz = 'UTC',units = 'days')) <= dayDup){
       delset <- c(delset,i)
     } else if(curSvrid != pSvrid){
       pFtime <- curFtime

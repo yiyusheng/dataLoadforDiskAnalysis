@@ -9,8 +9,10 @@ data.config$bs1 <- cmdb_dev$bs1[match(data.config$ip,cmdb_dev$ip)]
 data.config <- subset(data.config,use_time > as.POSIXct('2010-01-01'))
 data.config$dev_class_id <- factor(data.config$dev_class_id)
 
-# L2. 提取故障数据
+# L2. 提取故障数据,filter failed servers whose f_time less than use_time in cmdb
 data.flist$dev_class_id <- cmdb$dev_class_id[match(data.flist$svr_id,cmdb$svr_asset_id)]
+data.flist$use_time <- cmdb$use_time[match(data.flist$svr_id,cmdb$svr_asset_id)]
+data.flist <- subset(data.flist,use_time < f_time)
 
 # data.f: 201406-201408 for failed disks of C and TS servers 
 data.f <- subset(data.flist,f_time > as.POSIXct('2014/06/01') & 
