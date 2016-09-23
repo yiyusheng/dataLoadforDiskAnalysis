@@ -2,7 +2,7 @@
 rm(list = ls())
 source('head.R')
 
-# 1. 读取uwork数据,因为helper中是有use_time的,所以把uwork也加一个use_time
+# 1. 读取uwork数据
 load(file.path(dir_data,'flist(uwork[2012-2014]).Rda'))
 data.flist_uwork <- data.flist[,c('ip','svr_id','f_time','class','ftype','group')]
 
@@ -10,7 +10,7 @@ data.flist_uwork <- data.flist[,c('ip','svr_id','f_time','class','ftype','group'
 load(file.path(dir_data,'flist(helper[2008-2013]).Rda'))
 data.flist_helper <- data.flist[,c('ip','svr_id','f_time','class','ftype','group')]
 
-# 3. 合并数据
+# 3. 合并数据. We use class == -1 to determine read failure
 data.flist <- rbind(data.flist_helper,data.flist_uwork)
 data.flist$group <- factor(data.flist$group)
 data.flist <- factorX(data.flist)
@@ -23,7 +23,7 @@ data.flist <- factorX(data.flist)
 dayDup <- 3
 data.pretFlist <- subset(data.flist,class == -1)
 data.flist <- subset(data.flist,class != -1)
-data.flist <- dedupTime(data.flist,dayDup)
-data.pretFlist <- dedupTime(data.pretFlist,dayDup)
+data.flist <- dedupTime(data.flist,dayDup,'svr_id')
+# data.pretFlist <- dedupTime(data.pretFlist,dayDup,'svr_id')
 # 6.存储
 save(data.flist,data.pretFlist,file = file.path(dir_data,'flist.Rda'))

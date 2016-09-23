@@ -1,27 +1,51 @@
 # failure list duplication, statistic failure times, extract first failure time
 rm(list = ls())
 source('head.R')
-
+require(data.table)
 ####################################
 # 1. read data
 data.flA <- read.csv(file.path(dir_data,'uwork_20120101-20131210.csv'))
 data.flB <- read.csv(file.path(dir_data,'故障单精简_06-09.csv'))
-data.flC <- read.csv(file.path(dir_data,'d_alarm_34_140701_141130.txt'),header = F,sep = '\t')
-
 names(data.flA) <- c('id','svr_id','ip','ftype','ori_ftype',
                     'f_time','ftype_d1','ftype_d2','ftype_d')
 names(data.flB) <- c('id','svr_id','ip','ftype',
                      'idc','dev_class_name','dev_class_id','dept_id',
                      'f_time','f_desc','ftype_d1','ftype_d2')
-# names(data.flC) <- c('id','ip','fid','failureInfo','f_time','recov_time')
 
+# Read data C
+readC <- fread(file.path(dir_data,'硬盘故障单140101_141231A.txt'),
+                  sep = '~',header = F,encoding = 'UTF-8')
+tenc_fail_record_parse <- function(str){
+  s <- strsplit(str,split = '\t')[[1]]
+  len <- length(s)
+  if (len != 10){
+    s1 <- character(10)
+    s1[1:5] <- s[1:5]
+    s1[6] <- paste(s[6:(len-4)],sep='',collapse = '')
+    s1[7:10] <- s[(len-3):len]
+    s <- s1
+  }
+  s
+}
+tmp <- sapply(1:nrow(readC),function(i)tenc_fail_record_parse(readC[i]$V1))
+data.flC <- data.frame(t(tmp[,2:nrow(readC)]))
+names(data.flC) <- tmp[,1]
+names(data.flC) <- c('extractDate','id','svr_id','svr_sn','ip',
+                     'faultInfo','ftype','f_time','f_time1','tag')
+data.flC$ftype_d1 <- factor('硬盘故障;')
+data.flC$ftype_d2 <- factor('硬盘故障;')
+
+# merge failure record
 col_need <- c('svr_id','ip','ftype','f_time','ftype_d1','ftype_d2')
 data.flA <- data.flA[,col_need]
 data.flB <- data.flB[,col_need]
+data.flC <- data.flC[,col_need]
 data.flA$group <- 'uworkA'
 data.flB$group <- 'uworkB'
-
-data.fl <- rbind(data.flA,data.flB)
+data.flC$group <- 'uworkC'
+# data.fl <- rbind(data.flA,data.flB,data.flC)
+# We remove data.flB which is included in data.flC
+data.fl <- rbind(data.flA,data.flC)
 data.fl$f_time <- as.POSIXct(data.fl$f_time,tz = 'UTC')
 
 # 2. del space

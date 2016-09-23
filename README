@@ -1,0 +1,11 @@
+1A.Read failure records from two source: Failure_list_preprocess(helper).R + Failure_list_preprocess(uwork).R
+
+1B.Merge the two records: Failure_list_preprocess(ALL).R
+
+2.Read disk info from two source: diskInfoLoad.R
+
+3.Read server info from cmdb: serverInfo.R(Disk_number_label.R)
+
+4.Generate IO feature from a low level io feature file: ioFeatureLoad.R
+
+5.Load all result and merge them: Info_Load.R(attr_load.R)

@@ -8,77 +8,84 @@ diskA_ip <- read.csv(file.path(dir_data,'d_smart_1021.csv'),head = F)
 diskA <- diskA_ip[,1:2]
 names(diskA) <- c('ip','device')
 diskA <- diskA[!duplicated(diskA[c('ip','device')]),]
-diskA <- melt(table(diskA$ip))
+diskAip <- melt(table(diskA$ip))
+names(diskAip) <- c('ip','disknum')
 
 # 2. read ip, disk number and model from TABLE smart_Tencent_disk.csv
 diskB_ip <- read.csv(file.path(dir_data,'0303_smart_Tencent_disk.csv'),head = F)
-diskBModel <- diskB_ip[,1:4]
-names(diskBModel) <- c('sn','ip','device','model')
-diskBModel <- diskBModel[!duplicated(diskBModel[c('ip','sn')]),]
-diskBModel$model <- as.character(diskBModel$model)
-diskBModel$model[diskBModel$model==''] <- 'NOMODEL'
-diskBModel$model <- as.factor(diskBModel$model)
-diskB <- melt(table(diskBModel$ip))
+diskB <- diskB_ip[,1:4]
+names(diskB) <- c('sn','ip','device','model')
+diskB <- diskB[!duplicated(diskB[c('ip','sn')]),]
 
-# merge two dataset
-disk <- rbind(diskA,diskB)
-names(disk) <- c('ip','disknum')
-disk <- disk[!duplicated(disk['ip']),]
+ipNoModel <- fct2ori(diskB$ip[diskB$model == ''])
+diskB <- factorX(subset(diskB,!(ip %in% ipNoModel)))
 
-# 3. merge diskBmodel and num_info
+diskBip <- melt(table(diskB$ip))
+names(diskBip) <- c('ip','disknum')
+
+# merge two dataset into disk. 
+# disk is a table including ip and number of disks.
+diskAll <- rbind(diskAip,diskBip)
+diskAll <- diskAll[!duplicated(diskAll['ip']),]
+
+# 3. Add model_clear and capacity for diskB
 info.model <- read.csv(file.path(dir_data,'num_model.csv'))
-diskBModel <- merge(diskBModel,info.model[,1:2],by.x = 'model',by.y = 'Model_ori',all.x = T)
-diskBModel$Model_clear <- as.character(diskBModel$Model_clear)
-diskBModel$Model_clear[is.na(diskBModel$Model_clear)] <- 'NOMODEL'
-diskBModel$Model_clear <- factor(diskBModel$Model_clear)
 
-# 4. export disk model to search capacity of them
-diskBModel$ipm <- paste(diskBModel$ip,diskBModel$model,sep='_')
-table.ipm <- table(diskBModel$ipm)
-disk_model <- strsplit(as.character(names(table.ipm)),'_')
-disk_model <- data.frame(t(sapply(disk_model,c)))
-disk_model$count <- as.numeric(table.ipm)
-names(disk_model) <- c('ip','model','number')
+diskB$oriModel <- diskB$model
+diskB$model <- info.model$Model_clear[match(diskB$oriModel,info.model$Model_ori)]
+diskB$capacity <- info.model$capacity[match(diskB$model,info.model$Model_clear)]
+ipNoModel <- fct2ori(diskB$ip[is.na(diskB$model)])
+diskB <- factorX(subset(diskB,!(ip %in% ipNoModel)))
 
-# 5. read model info
-disk_model$model_ori <- disk_model$model
-disk_model$model <- info.model$Model_clear[match(disk_model$model_ori,info.model$Model_ori)]
-disk_model$model <- as.character(disk_model$model)
-disk_model$model[!is.element(disk_model$model,info.model$Model_clear)] <- 'NOMODEL'
-disk_model$model <- as.factor(disk_model$model)
+# 4.paste all model together
+# detailModel = data.frame(ip = levels(diskB$ip),
+#                          uniModel = tapply(diskB$model,diskB$ip,
+#                                            function(x)paste(unique(x[x != 'NOMODEL']),collapse = '_')))
+# detailModel$uniModel[detailModel$uniModel == ''] <- 'NOMODEL'
+# detailModel$uniModel <- factor(detailModel$uniModel)
+# save(detailModel,file = file.path(dir_data,'detailModel.Rda'))
+load(file.path(dir_data,'detailModel.Rda'))
 
-# 6. 给disk model添加容量,数量等信息
-model_info <- read.csv(file.path(dir_data,'num_model.csv'))
-model_info <- model_info[!duplicated(model_info$Model_clear),]
-disk_model <- subset(disk_model,model!='NOMODEL')
-disk_model <- merge(disk_model,model_info,by.x = 'model',by.y = 'Model_clear',all.x = T)
-disk_model$total <- disk_model$capacity*disk_model$number
-disk_model$Count <- NULL
-disk_model$Model_ori <- NULL
-disk_model$Discs <- disk_model$Discs*disk_model$number
-disk_model$Heads <- disk_model$Heads*disk_model$number
+# 5. Generate disk_ip for diskB
 
-# 7. 为有disk model的ip建立的表
-disk_model$interface <- as.character(disk_model$interface)
-disk_model$interface[disk_model$interface == 'SATA 3Gb/s'] <- 'SATA2'
-disk_model$interface[disk_model$interface == 'SATA 6Gb/s'] <- 'SATA3'
-disk_ip <- data.frame(ip = levels(disk_model$ip),
-                      total = as.numeric(tapply(disk_model$total,disk_model$ip,sum)),
-                      disk_c = as.numeric(tapply(disk_model$number,disk_model$ip,sum)),
-                      disc_c = as.numeric(tapply(disk_model$Discs,disk_model$ip,sum)),
-                      head_c = as.numeric(tapply(disk_model$Heads,disk_model$ip,sum)),
-                      disk_model = factor(tapply(as.character(disk_model$model),disk_model$ip,
-                                                 function(x)paste(x,collapse='_'))),
-                      disk_cache = factor(tapply(as.character(disk_model$Cache.MB.), disk_model$ip,
-                                                 function(x)paste(x,collapse='_'))),
-                      disk_inter = factor(tapply(as.character(disk_model$interface),disk_model$ip,
-                                                 function(x)paste(x,collapse='_'))),
-                      disk_model_c = factor(tapply(disk_model$number,disk_model$ip,
-                                                   function(x)paste(x,collapse='_'))),
-                      disk_model_c1 = as.numeric(tapply(disk_model$number,disk_model$ip,length)))      
-disk_ip <- disk_ip[!is.na(disk_ip$total),]
-row.names(disk_ip) <- NULL
+# for server with only one disk
+diskB1 <- factorX(subset(diskB,ip %in% diskBip$ip[diskBip$disknum == 1]))
+disk_ip1 <- diskB1[,c('ip','capacity','model')]
+disk_ip1$numDisk <- 1;disk_ip1$numModel <- 1;
+disk_ip1$numMain <- 1;disk_ip1$mainModel <- disk_ip1$model
+disk_ip1 <- disk_ip1[,c('ip','capacity','numDisk','numModel','mainModel','numMain')]
 
-# 8. save
-# disk_ip是一个ip一行,diskBmodel是一个disk一行.
-save(disk,diskBModel,disk_model,disk_ip,file = file.path(dir_data,'disk_two_lists.Rda'))
+# for server with multiple disks
+diskB2 <- factorX(subset(diskB,ip %in% diskBip$ip[diskBip$disknum != 1],c('ip','model','capacity')))
+diskB2$ip <- fct2ori(diskB2$ip)
+diskB2$model <- fct2ori(diskB2$model)
+splitIP <- split(diskB2,diskB2$ip)
+
+modelInfo <- function(df){
+  cat(sprintf('[diskInfoLoad::modelInfo] svrid:%s\n',df$ip[1]))
+  tmp <- sort(table(df$model),decreasing = T)
+  list(ip = df$ip[1],
+       capacity = sum(df$capacity),
+       numDisk = sum(tmp),
+       numModel = length(names(tmp)),
+       mainModel = names(tmp)[1],
+       numMain = as.numeric(tmp[1]))
+}
+
+disk_ip2 <- lapplyX(splitIP,modelInfo)
+disk_ip2 <- data.frame(matrix(unlist(disk_ip2),byrow = T,nrow = length(disk_ip2)))
+names(disk_ip2) <- names(disk_ip1)
+
+# merge 
+disk_ip <- factorX(rbind(disk_ip1,disk_ip2))
+disk_ip$numDisk <- as.numeric(disk_ip$numDisk)
+disk_ip$capacity <- as.numeric(disk_ip$capacity)
+disk_ip$numModel <- as.numeric(disk_ip$numModel)
+disk_ip$numMain <- as.numeric(disk_ip$numMain)
+disk_ip <- disk_ip[,c('ip','capacity','numDisk','numModel','numMain','mainModel')]
+
+# 5. save
+# diskAll是一个ip一行 for all disk from two files
+# diskB是一个disk一行 from one file
+# disk_ip: one line for one ip with more infomation from the same file as diskB
+save(diskAll,detailModel,diskB,disk_ip,file = file.path(dir_data,'disk_two_lists.Rda'))
