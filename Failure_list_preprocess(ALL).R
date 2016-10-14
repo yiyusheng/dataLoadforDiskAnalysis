@@ -25,5 +25,6 @@ data.pretFlist <- subset(data.flist,class == -1)
 data.flist <- subset(data.flist,class != -1)
 data.flist <- dedupTime(data.flist,dayDup,'svr_id')
 # data.pretFlist <- dedupTime(data.pretFlist,dayDup,'svr_id')
+
 # 6.存储
 save(data.flist,data.pretFlist,file = file.path(dir_data,'flist.Rda'))
