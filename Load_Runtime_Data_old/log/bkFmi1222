@@ -1,0 +1,20 @@
+nohup: ignoring input
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "Read file part-00001[Tue Dec 22 09:52:00 2015]"
+[1] "Iterate Round 1 part-00001[Tue Dec 22 10:02:07 2015]"
+[1] "Iterate Round 2 part-00001[Tue Dec 22 11:25:49 2015]"
+[1] "Iterate Round 3 part-00001[Tue Dec 22 12:41:28 2015]"
+[1] "Iterate Round 4 part-00001[Tue Dec 22 13:24:00 2015]"
+[1] "Saving data [Tue Dec 22 14:14:46 2015]"
+nohup: ignoring input
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "Read file part-00000A[Tue Dec 22 15:08:44 2015]"
+[1] "Iterate Round 1 part-00000A[Tue Dec 22 15:08:52 2015]"
+[1] "Iterate Round 2 part-00000A[Tue Dec 22 15:09:36 2015]"
+[1] "Iterate Round 3 part-00000A[Tue Dec 22 15:10:14 2015]"
+[1] "Iterate Round 4 part-00000A[Tue Dec 22 15:10:53 2015]"
+[1] "Saving data [Tue Dec 22 15:11:34 2015]"

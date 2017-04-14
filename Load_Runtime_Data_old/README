@@ -1,0 +1,13 @@
+1. attempt to merge runtime data(15 attributes) and split data into multipal files based on svrid
+firstMergeIte.R
+firstMergeTest.R
+firstMerge.R
+
+2. Load SMART from text file and generate Rda file
+load_smart.R
+
+3. rbind all Rda files into one Rda file
+merge_io_each.R
+
+4. seems to merge all util(999) into one file
+merge_io.R

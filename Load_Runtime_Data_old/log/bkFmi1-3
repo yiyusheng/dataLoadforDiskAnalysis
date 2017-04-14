@@ -1,0 +1,25 @@
+nohup: ignoring input
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "Read file part-00000[Mon Dec 21 22:35:27 2015]"
+[1] "Iterate Round 1 part-00000[Mon Dec 21 22:52:22 2015]"
+[1] "Iterate Round 2 part-00000[Tue Dec 22 00:11:30 2015]"
+nohup: ignoring input
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "Read file part-00001[Mon Dec 21 22:35:37 2015]"
+[1] "Iterate Round 1 part-00001[Mon Dec 21 22:52:15 2015]"
+Error in unserialize(socklist[[n]]) : error reading from connection
+Calls: %dopar% ... recvOneData -> recvOneData.SOCKcluster -> unserialize
+Execution halted
+nohup: ignoring input
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[1] "Read file part-00002[Mon Dec 21 22:35:50 2015]"
+[1] "Iterate Round 1 part-00002[Mon Dec 21 22:52:46 2015]"
+[1] "Iterate Round 2 part-00002[Tue Dec 22 00:10:49 2015]"
+[1] "Iterate Round 3 part-00002[Tue Dec 22 01:33:40 2015]"
+[1] "Iterate Round 4 part-00002[Tue Dec 22 03:13:36 2015]"

@@ -1,0 +1,14 @@
+1.partition_table.R[Useless]
+I partition the cmdb table into subset with 3000 servers in each and attempt to partition the large file(80G) and merge the small table with same svrid together by this table
+
+2.partition_file.R[Useless]
+I partition each big file(representing a attrid) into small ones by split command in shell and use the table in 1 to split each small file(level I) into small files (level II). Then I merge all files in level II with the same svrid together. I split the 80G file because memory limitation and the bad performance of single thread disable it split straightly. So I can only split + split + merge to complete one split if there is enough memory and time.
+
+3.merge_file.R[Useless]
+merge partitioned file in 2. But FAILED! I find I have done all of this by asking fei cheng to partition file in spark. So I used the partitioned file by fei cheng directly.
+
+4.mergePartDiskClear.R
+clear data generate by fei cheng. I remove all bad items. Then, I can filter svrid by the number of its items. Item of some svrid is removed almostly.
+
+5.partition_fc_data.R
+fei cheng's data is large for parallel processing. It contains 5000 servers in one file. I divide each file into five files with only 1000 servers to relieve pressure of memory.

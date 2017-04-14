@@ -2,9 +2,9 @@
 
 1B.Merge the two records: Failure_list_preprocess(ALL).R
 
-2.Read disk info from two source: diskInfoLoad.R
+2.Read disk from two source: diskInfoLoad.R
 
-3.Read server info from cmdb: serverInfo.R(Disk_number_label.R)
+3.Read server from cmdb: serverInfo.R(Disk_number_label.R)
 
 4.Generate IO feature from a low level io feature file: ioFeatureLoad.R
 
