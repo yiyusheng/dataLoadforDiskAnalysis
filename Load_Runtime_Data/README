@@ -11,4 +11,4 @@ merge partitioned file in 2. But FAILED! I find I have done all of this by askin
 clear data generate by fei cheng. I remove all bad items. Then, I can filter svrid by the number of its items. Item of some svrid is removed almostly.
 
 5.partition_fc_data.R
-fei cheng's data is large for parallel processing. It contains 5000 servers in one file. I divide each file into five files with only 1000 servers to relieve pressure of memory.
+fei cheng's data is large for parallel processing. It contains 5000 servers in each file. I divide each file into five files with only 1000 servers to relieve pressure of memory.
